@@ -83,7 +83,7 @@ const handleNoteDelete = (e) => {
   e.stopPropagation();
 
   const note = e.target;
-  const noteId = JSON.parse(note.parentElement.getAttribute('data-note')).id;
+  const noteId = JSON.parse(JSON.stringify(note.parentElement.getAttribute('data-note')));
 
   if (activeNote.id === noteId) {
     activeNote = {};
@@ -161,6 +161,7 @@ const renderNoteList = async (notes) => {
   jsonNotes.forEach((note) => {
     const li = createLi(note.title);
     li.dataset.note = JSON.stringify(note);
+    li.setAttribute('data-note',note.note_id)
 
     noteListItems.push(li);
   });

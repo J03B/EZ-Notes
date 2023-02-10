@@ -1,7 +1,7 @@
 // Import Application Requirements
 const express = require('express');
 const path = require('path');
-const { readAndAppend, readFromFile } = require('./assets/fsUtils');
+const { readAndAppend, readFromFile, writeToFile } = require('./assets/fsUtils');
 const notes = require('./db/db.json');
 const { v4: uuidv4 } = require('uuid');
 const { clog } = require('./assets/clog');
@@ -32,16 +32,19 @@ app.get('/api/notes', (req, res) => {
 });
 
 // Not sure yet if the individual note is even needed
-app.get('/api/notes/:note_id', (req, res) => {
+app.delete('/api/notes/:note_id', (req, res) => {
   if (req.params.note_id) {
     const noteId = req.params.note_id;
+    const newList = [];
     for (let i = 0; i < notes.length; i++) {
       const currentNote = notes[i];
       if (currentNote.note_id === noteId) {
         res.status(200).json(currentNote);
-        return;
+      } else {
+        newList.push(currentNote);
       }
     }
+    writeToFile('./db/db.json', newList);
     res.status(404).send('Note not found');
   } else {
     res.status(400).send('Note ID not provided');
@@ -56,7 +59,7 @@ app.post('/api/notes', (req, res) => {
   // Make sure the note has a body before saving it back to the client
   if (title && text) {
     const newNote = {
-      note_id: uuidv4(),
+      note_id: uuidv4().split('-')[0],
       title,
       text
     };
