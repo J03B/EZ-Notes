@@ -7,7 +7,11 @@ const { clog } = require('./assets/clog');
 
 // Define Application Globals
 const app = express();
-const PORT = process.env.PORT || 3001;
+let PORT = process.env.PORT;
+if (PORT == null || PORT == "") {
+  PORT = 3001
+}
+let notes;
 
 // Define default directory in the public folder with main pages
 app.use(clog);
@@ -32,17 +36,20 @@ app.get('/api/notes', (req, res) => {
 
 // Define DELETE request for individual note calls
 app.delete('/api/notes/:note_id', (req, res) => {
-  let notes = require('./db/db.json');
-  const noteId = req.params.note_id;
-  if (notes.find(note => note.note_id === noteId)) {
-    const noteIndex = notes.findIndex(note => note.note_id === noteId);
-    notes.splice(noteIndex,1);
-    writeToFile('./db/db.json', notes);
-    res.status(200).json(`Note with ID ${noteId} deleted successfully`);
-  } 
-  else {
-    res.status(404).json('Note ID not found');
-  }
+  readFromFile('./db/db.json').then((data) => {
+    notes = JSON.parse(data);
+    const noteId = req.params.note_id;
+    // Check that the note exists in the file before trying to delete it
+    if (notes.find(note => note.note_id === noteId)) {
+      const noteIndex = notes.findIndex(note => note.note_id === noteId);
+      notes.splice(noteIndex,1);
+      writeToFile('./db/db.json', notes);
+      res.status(200).json(`Note with ID ${noteId} deleted successfully`);
+    } 
+    else {
+      res.status(404).json('Note ID not found');
+    }
+  });
 });
 
 // Define APIs for POST resquests for notes

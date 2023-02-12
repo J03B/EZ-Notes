@@ -50,6 +50,7 @@ const deleteNote = (id) =>
     },
   });
 
+// This is used to display the note being displayed, whether new or current
 const renderActiveNote = () => {
   hide(saveNoteBtn);
 
@@ -66,6 +67,7 @@ const renderActiveNote = () => {
   }
 };
 
+// Main function for saving new notes to the API
 const handleNoteSave = () => {
   const newNote = {
     title: noteTitle.value,
@@ -189,4 +191,5 @@ if (window.location.pathname === '/notes') {
   noteText.addEventListener('keyup', handleRenderSaveBtn);
 }
 
+// Initializes the page
 getAndRenderNotes();
