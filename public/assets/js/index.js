@@ -33,14 +33,6 @@ const getNotes = () =>
     },
   });
 
-const getNote = (id) =>
-  fetch(`/api/notes/${id}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
 const saveNote = (note) =>
   fetch('/api/notes', {
     method: 'POST',
@@ -61,7 +53,7 @@ const deleteNote = (id) =>
 const renderActiveNote = () => {
   hide(saveNoteBtn);
 
-  if (activeNote.id) {
+  if (activeNote.note_id) {
     noteTitle.setAttribute('readonly', true);
     noteText.setAttribute('readonly', true);
     noteTitle.value = activeNote.title;
@@ -106,10 +98,16 @@ const handleNoteDelete = (e) => {
 // Sets the activeNote and displays it
 const handleNoteView = (e) => {
   e.preventDefault();
-  let activeNoteId = JSON.parse(e.target.parentElement.getAttribute('data-note'));
-  getNote(activeNoteId).then((res) => activeNote = res);
-  console.log(activeNote);
-  renderActiveNote();
+  let activeNoteId = JSON.parse(JSON.stringify(e.target.parentElement.getAttribute('data-note')));
+  getNotes().then((res) => res.json())
+    .then((data) => {
+      data.forEach((note) => {
+        if (note.note_id == activeNoteId) {
+          activeNote = note;
+        }
+        renderActiveNote();
+      })
+    });
 };
 
 // Sets the activeNote to and empty object and allows the user to enter a new note

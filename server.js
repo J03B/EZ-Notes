@@ -29,14 +29,6 @@ app.get('/api/notes', (req, res) => {
   readFromFile('./db/db.json').then((data) =>
     res.status(200).json(JSON.parse(data)));
 });
-// Define GET requests for individual note
-app.get('/api/notes/:id', (req, res) => {
-  const id = req.params.id;
-  readFromFile('./db/db.json').then((data) => {
-    const singleNote = data.find(note => note.note_id === id);
-    res.status(200).json(JSON.parse(singleNote));
-  });
-});
 
 // Define DELETE request for individual note calls
 app.delete('/api/notes/:note_id', (req, res) => {
